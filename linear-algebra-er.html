@@ -235,9 +235,12 @@
           features with larger ranges from dominating the calculations
         </li>
         <li>
-          <strong>Categorical data</strong>: For features like gender or
-          country, it can use techniques like one-hot encoding. For example,
-          gender might be represented as [1, 0] for male and [0, 1] for female
+          <strong>Categorical data</strong>: For features like industry sector
+          or geographical region, we can use techniques like one-hot encoding or
+          embeddings. For instance, in one-hot encoding, a 'country' feature
+          with options 'USA', 'Canada', and 'Mexico' might be represented as [1,
+          0, 0], [0, 1, 0], and [0, 0, 1] respectively. This preserves
+          categorical distinctions without imposing an arbitrary numerical order
         </li>
         <li>
           <strong>Text data</strong>: For names or addresses, there are several
