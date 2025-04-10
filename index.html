@@ -16,7 +16,7 @@
         line-height: 1.4;
         color: #333;
         background-color: #fafafa;
-        max-width: 650px;
+        max-width: 550px;
         margin: 0 auto;
         padding: 80px 20px 40px;
         font-size: 14px;
@@ -35,6 +35,9 @@
       p {
         margin: 0 0 15px 0;
       }
+      .main-paragraph {
+        text-align: justify;
+      }
       a {
         color: #333;
         text-decoration: none;
@@ -44,17 +47,6 @@
       a:hover {
         color: #000000;
         border-bottom-color: #333;
-      }
-      .container {
-        display: flex;
-        justify-content: space-between;
-      }
-      .main-content {
-        flex: 2;
-        padding-right: 40px;
-      }
-      .sidebar {
-        flex: 1;
       }
       .links ul,
       .writings ul {
@@ -76,68 +68,119 @@
       .signature {
         margin-top: 20px;
         color: #666;
+        text-align: right;
       }
-      @media (max-width: 600px) {
-        body {
-          padding-top: 60px;
-        }
-        .container {
-          flex-direction: column;
-        }
-        .main-content {
-          padding-right: 0;
-        }
-        .sidebar {
-          margin-top: 20px;
-        }
+      .links {
+        margin-top: 30px;
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+      }
+      .links h2 {
+        margin: 0;
+      }
+      .links ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+      }
+      .links li {
+        display: inline-block;
+        margin-bottom: 0;
+        margin-left: 15px;
+      }
+      .projects {
+        margin-top: 40px;
+      }
+      .projects h2 {
+        font-size: 18px;
+        font-weight: 400;
+        margin: 0 0 15px 0;
+        letter-spacing: -0.5px;
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+      }
+      .projects ul {
+        list-style-type: none;
+        padding: 0;
+        margin: 0;
+      }
+      .projects li {
+        margin-bottom: 10px;
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+      }
+      .project-title {
+        font-weight: 400;
+      }
+      .projects .project-description {
+        margin-left: 0;
+      }
+      .project-status {
+        font-weight: 300;
+        font-size: 14px;
+        color: #666;
+        margin-left: 8px;
       }
     </style>
   </head>
   <body>
-    <div class="container">
-      <div class="main-content">
-        <h1>josh.dev</h1>
-        <p>
-          Currently building
-          <a href="https://www.catenaclearing.io/">Catena</a>. Before that I was a 
-          lead software engineer at <a href="https://www.interos.ai/">Interos</a> 
-          where I built proprietary entity resolution frameworks and supply chain risk
-          analysis pipelines. Before that I was a lead backend engineer at 
-          <a href="https://agoradata.com/">Agora</a> where I built a unified data 
-          layer and high volume workflows for auto finance data. Before that I was a 
-          founding engineer at <a href="https://www.prefect.io/">Prefect</a> where I built 
-          open source data engineering libraries and hybrid cloud platforms. Before
-          that I was a software engineer at
-          <a href="https://kensho.com/">Kensho</a> (acq.
-          <a href="https://www.google.com/finance/quote/SPGI:NYSE">$SPGI</a>)
-          where I built natural language processing pipelines for geopolitical
-          and financial data. Before that I was a machine learning researcher in
-          partnership with NASA's
-          <a href="https://www.nasa.gov/goddard/"
-            >Goddard Space Flight Center</a
-          >
-          and the
-          <a href="https://www.jpl.nasa.gov/">Jet Propulsion Lab</a> where I
-          built models to classify and predict spaceflight anomalies.
-        </p>
-        <div class="signature">
-          <p>
-            zk7x9p3m2f@proton.me<br />
-            Please reach out if I can help in any way.
-          </p>
-        </div>
-      </div>
-      <div class="sidebar">
-        <div class="links">
-          <h2>Find me:</h2>
-          <ul>
-            <li>
-              <a href="https://linkedin.com/in/josh-meek">LinkedIn</a>
-            </li>
-            <li><a href="https://github.com/joshmeek">GitHub</a></li>
-          </ul>
-        </div>
-      </div>
+    <h1>josh.dev</h1>
+    <p class="main-paragraph">
+      Currently building
+      <a href="https://www.catenaclearing.io/">Catena</a>. Before that I was a 
+      lead software engineer at <a href="https://www.interos.ai/">Interos</a> 
+      where I built proprietary entity resolution frameworks and supply chain risk
+      analysis pipelines. Before that I was a lead backend engineer at 
+      <a href="https://agoradata.com/">Agora</a> where I built a unified data 
+      layer and high volume workflows for auto finance data. Before that I was a 
+      founding engineer at <a href="https://www.prefect.io/">Prefect</a> where I built 
+      open source data engineering libraries and hybrid cloud platforms. Before
+      that I was a software engineer at
+      <a href="https://kensho.com/">Kensho</a> (acq.
+      <a href="https://www.google.com/finance/quote/SPGI:NYSE">$SPGI</a>)
+      where I built natural language processing pipelines for geopolitical
+      and financial data. Before that I was a machine learning researcher in
+      partnership with NASA's
+      <a href="https://www.nasa.gov/goddard/"
+        >Goddard Space Flight Center</a
+      >
+      and the
+      <a href="https://www.jpl.nasa.gov/">Jet Propulsion Lab</a> where I
+      built models to classify and predict spaceflight anomalies.
+    </p>
+    <div class="signature">
+      <p>
+        zk7x9p3m2f@proton.me<br />
+        Please reach out if I can help in any way
+      </p>
     </div>
+    <div class="links">
+      <h2>Find me</h2>
+      <ul>
+        <li>
+          <a href="https://linkedin.com/in/josh-meek" class="project-title">LinkedIn</a>
+        </li>
+        <li><a href="https://github.com/joshmeek" class="project-title">GitHub</a></li>
+        <li><a href="https://bsky.app/profile/josh.dev" class="project-title">Bluesky</a></li>
+      </ul>
+    </div>
+
+    <div class="projects">
+      <h2>Misc side projects <span class="project-status">(no longer maintained so I open sourced them)</span></h2>
+      <ul>
+        <li>
+          <a href="https://github.com/joshmeek/isidor" class="project-title">isidor</a>
+          <span class="project-description">AI-driven system for personalized health insights from wearable data</span>
+        </li>
+        <li>
+          <a href="https://github.com/joshmeek/rezolva" class="project-title">rezolva</a>
+          <span class="project-description">Library of entity resolution algorithms with no external dependencies</span>
+        </li>
+      </ul>
+    </div>
+
   </body>
 </html>
