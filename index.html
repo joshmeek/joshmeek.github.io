@@ -15,7 +15,7 @@
       body {
         font-family: "IBM Plex Sans", sans-serif;
         font-weight: 300;
-        line-height: 1.4;
+        line-height: 1.35;
         color: #000;
         background-color: #fafafa;
         max-width: 550px;
@@ -24,12 +24,18 @@
         font-size: 15px;
       }
 
+      ::selection {
+        color: #000;
+        background: #e8e8e8;
+      }
+
       h1,
       h2 {
         font-size: 24px;
         font-weight: 400;
         margin: 0 0 15px 0;
-        letter-spacing: -0.5px;
+        letter-spacing: 0;
+        text-wrap: pretty;
       }
 
       h2 {
@@ -39,6 +45,7 @@
 
       p {
         margin: 0 0 15px 0;
+        text-wrap: pretty;
       }
 
       .main-paragraph {
@@ -82,11 +89,11 @@
 
       .link-preview-window {
         overflow: hidden;
-        border: 1px solid rgba(51, 51, 51, 0.12);
-        background: rgba(250, 250, 250, 0.96);
-        box-shadow: 0 14px 35px rgba(0, 0, 0, 0.12);
+        border: 1px solid rgba(0, 0, 0, 0.18);
+        background: #fff;
+        box-shadow: 0 8px 18px rgba(0, 0, 0, 0.08);
         backdrop-filter: blur(12px);
-        padding: 12px;
+        padding: 10px;
       }
 
       .experience-heading {
@@ -275,7 +282,7 @@
         font-size: 18px;
         font-weight: 400;
         margin: 0 0 15px 0;
-        letter-spacing: -0.5px;
+        letter-spacing: 0;
         display: flex;
         justify-content: space-between;
         align-items: baseline;
@@ -380,7 +387,6 @@
         data-preview-type="stock"
         data-stock-symbol="SPGI"
         data-stock-market="NYSE"
-        data-stock-name="S&amp;P Global Inc"
         >$SPGI</a
       >)
       where I built natural language processing pipelines for geopolitical and
@@ -535,27 +541,41 @@
           card.style.top = `${Math.max(margin, top)}px`;
         };
 
-        const parseStockQuote = (markdown, stockName) => {
-          const lines = markdown
-            .split("\n")
-            .map((line) => line.trim())
-            .filter(Boolean);
-          const start = lines.findIndex((line) => line === stockName);
-          const quoteLines = start === -1 ? lines : lines.slice(start, start + 12);
-          const price = quoteLines.find((line) => /^\$[\d,.]+$/.test(line));
-          const percent = quoteLines.find((line) => /^[+-]\d+(\.\d+)?%$/.test(line));
-          const today = quoteLines.find((line) => /^\([+-]?[\d,.]+\) Today$/.test(line));
-          const timestamp = quoteLines.find((line) => line.includes("UTC") && line.includes("USD"));
+        const formatSignedNumber = (value) => {
+          const sign = value >= 0 ? "+" : "-";
+          return `${sign}${Math.abs(value).toFixed(2)}`;
+        };
 
-          if (!price || !percent) {
+        const parseStockQuote = (data) => {
+          const meta = data.chart?.result?.[0]?.meta;
+          const priceValue = meta?.regularMarketPrice;
+          const previousClose = meta?.chartPreviousClose ?? meta?.previousClose;
+
+          if (!Number.isFinite(priceValue) || !Number.isFinite(previousClose)) {
             throw new Error("Quote not found");
           }
 
+          const change = priceValue - previousClose;
+          const percent = (change / previousClose) * 100;
+
           return {
-            price,
-            percent,
-            absolute: today ? today.replace(/[()]/g, "").replace(" Today", "") : "",
-            timestamp: timestamp ? timestamp.replace(/\s+\u00b7\s+USD$/, "") : "",
+            price: priceValue.toLocaleString("en-US", {
+              currency: "USD",
+              maximumFractionDigits: 2,
+              minimumFractionDigits: 2,
+              style: "currency",
+            }),
+            percent: `${formatSignedNumber(percent)}%`,
+            absolute: formatSignedNumber(change),
+            timestamp: meta.regularMarketTime
+              ? new Date(meta.regularMarketTime * 1000).toLocaleString("en-US", {
+                  day: "numeric",
+                  hour: "numeric",
+                  minute: "2-digit",
+                  month: "short",
+                  timeZoneName: "short",
+                })
+              : "",
           };
         };
 
@@ -575,8 +595,7 @@
 
         const fetchStockQuote = async (link) => {
           const symbol = link.dataset.stockSymbol;
-          const market = link.dataset.stockMarket || "NYSE";
-          const stockName = link.dataset.stockName;
+          const yahooUrl = `https://query1.finance.yahoo.com/v8/finance/chart/${symbol}?range=1d&interval=1m&includePrePost=false`;
 
           if (stockQuotes.has(symbol)) {
             return stockQuotes.get(symbol);
@@ -587,11 +606,17 @@
           }
 
           const request = fetch(
-            `https://r.jina.ai/http://r.jina.ai/http://https://www.google.com/finance/quote/${symbol}:${market}`
+            `https://api.allorigins.win/raw?url=${encodeURIComponent(yahooUrl)}`
           )
-            .then((response) => response.text())
-            .then((markdown) => {
-              const quote = parseStockQuote(markdown, stockName);
+            .then((response) => {
+              if (!response.ok) {
+                throw new Error("Quote request failed");
+              }
+
+              return response.json();
+            })
+            .then((data) => {
+              const quote = parseStockQuote(data);
               stockQuotes.set(symbol, quote);
               stockQuoteRequests.delete(symbol);
               return quote;
