@@ -8,15 +8,15 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400&display=block"
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400&display=block"
       rel="stylesheet"
     />
     <style>
       body {
-        font-family: "Inter", sans-serif;
+        font-family: "IBM Plex Sans", sans-serif;
         font-weight: 300;
         line-height: 1.4;
-        color: #333;
+        color: #000;
         background-color: #fafafa;
         max-width: 550px;
         margin: 0 auto;
@@ -46,15 +46,175 @@
       }
 
       a {
-        color: #333;
+        color: #000;
         text-decoration: none;
-        border-bottom: 1px solid #cbd5e0;
+        border-bottom: 1px solid #aeb8c2;
         transition: all 0.2s ease;
       }
 
       a:hover {
-        color: #000000;
-        border-bottom-color: #333;
+        color: #000;
+        border-bottom-color: #000;
+      }
+
+      .preview-link {
+        cursor: pointer;
+      }
+
+      .link-preview {
+        position: fixed;
+        z-index: 20;
+        width: min(380px, calc(100vw - 24px));
+        pointer-events: none;
+        opacity: 0;
+        transform: translateY(4px);
+        transition: opacity 0.14s ease, transform 0.14s ease;
+      }
+
+      .link-preview.is-visible {
+        opacity: 1;
+        transform: translateY(0);
+      }
+
+      .link-preview.is-stock {
+        width: min(260px, calc(100vw - 24px));
+      }
+
+      .link-preview-window {
+        overflow: hidden;
+        border: 1px solid rgba(51, 51, 51, 0.12);
+        background: rgba(250, 250, 250, 0.96);
+        box-shadow: 0 14px 35px rgba(0, 0, 0, 0.12);
+        backdrop-filter: blur(12px);
+        padding: 12px;
+      }
+
+      .experience-heading {
+        display: flex;
+        align-items: baseline;
+        gap: 12px;
+        justify-content: space-between;
+      }
+
+      .experience-role {
+        color: #000;
+        font-size: 15px;
+        font-weight: 400;
+        line-height: 1.25;
+        min-width: 0;
+      }
+
+      .experience-time {
+        color: #000;
+        flex: 0 0 auto;
+        font-size: 11px;
+        line-height: 1.25;
+        white-space: nowrap;
+      }
+
+      .experience-note {
+        color: #000;
+        font-size: 11px;
+        margin-top: 8px;
+      }
+
+      .experience-work {
+        border-top: 1px solid rgba(51, 51, 51, 0.08);
+        margin-top: 10px;
+        padding-top: 9px;
+      }
+
+      .experience-work-line {
+        color: #000;
+        font-size: 12px;
+        line-height: 1.4;
+        padding-left: 10px;
+        position: relative;
+      }
+
+      .experience-work-line::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 0.65em;
+        width: 3px;
+        height: 3px;
+        background: #000;
+      }
+
+      .experience-work-line + .experience-work-line {
+        margin-top: 7px;
+      }
+
+      .stock-preview {
+        display: none;
+      }
+
+      .link-preview.is-stock .experience-preview {
+        display: none;
+      }
+
+      .link-preview.is-stock .stock-preview {
+        display: block;
+      }
+
+      .stock-head,
+      .stock-line {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: 12px;
+      }
+
+      .stock-symbol {
+        color: #000;
+        font-size: 15px;
+        font-weight: 400;
+        line-height: 1.25;
+      }
+
+      .stock-market,
+      .stock-time {
+        color: #000;
+        font-size: 11px;
+        line-height: 1.25;
+        white-space: nowrap;
+      }
+
+      .stock-line {
+        border-top: 1px solid rgba(51, 51, 51, 0.08);
+        margin-top: 10px;
+        padding-top: 9px;
+      }
+
+      .stock-price {
+        color: #000;
+        font-size: 24px;
+        font-weight: 400;
+        line-height: 1;
+      }
+
+      .stock-change {
+        color: #000;
+        font-size: 12px;
+        font-weight: 400;
+        line-height: 1.2;
+        text-align: right;
+        white-space: nowrap;
+      }
+
+      .stock-change.is-up {
+        color: #137333;
+      }
+
+      .stock-change.is-down {
+        color: #a50e0e;
+      }
+
+      .stock-status {
+        color: #000;
+        font-size: 11px;
+        margin-top: 8px;
       }
 
       .links ul,
@@ -80,7 +240,7 @@
 
       .signature {
         margin-top: 20px;
-        color: #666;
+        color: #000;
         text-align: right;
       }
 
@@ -145,7 +305,7 @@
       .project-status {
         font-weight: 300;
         font-size: 14px;
-        color: #666;
+        color: #000;
         margin-left: 8px;
       }
     </style>
@@ -154,26 +314,96 @@
   <body>
     <h1>josh.dev</h1>
     <p class="main-paragraph">
-      Building <a href="https://www.endstatetech.com/">Endstate</a>. Before that I was a principal software engineer at
-      <a href="https://www.catenaclearing.io/">Catena</a>
+      Building
+      <a
+        href="https://www.endstatetech.com/"
+        class="preview-link"
+        data-preview-role="Co-Founder &amp; CTO"
+        data-preview-time="Jun 2025 - Present"
+        data-preview-work="Building an AI-native mission planning platform for military staffs conducting MDMP, from receipt of mission through orders production"
+        >Endstate</a
+      >. Before that I was a principal software engineer at
+      <a
+        href="https://www.catenaclearing.io/"
+        class="preview-link"
+        data-preview-role="Principal Software Engineer"
+        data-preview-time="Jan 2024 - Jan 2025"
+        data-preview-work="Architected a unified data platform bridging TMS, WMS, and customer systems, enabling end-to-end visibility across complex supply chain operations|Led development of an AI-driven inventory intelligence system leveraging LLMs and OCR to extract structured insights from unstructured operational data|Designed and deployed a scalable entity resolution engine to reconcile fragmented logistics and customer datasets, significantly improving data integrity|Contributed to a large-scale telematics platform integrating 60+ ELD providers, powering real-time data ingestion for 20M+ commercial vehicles|Engineered high-throughput data pipelines for ingesting, normalizing, and analyzing massive telematics and logistics datasets"
+        >Catena</a
+      >
       where I built AI-powered telematics and inventory solutions for the logistics
       industry. Before that I was a lead software engineer at
-      <a href="https://www.interos.ai/">Interos</a>
+      <a
+        href="https://www.interos.ai/"
+        class="preview-link"
+        data-preview-role="Lead Software Engineer"
+        data-preview-time="Jan 2021 - Jan 2024"
+        data-preview-work="Led a team responsible for real-time risk scoring across hundreds of millions of entities and billions of supply chain relationships|Directed development of core streaming data pipelines processing billions of daily events, forming the backbone of the platform's intelligence layer|Architected resilient, large-scale data models supporting 500M+ organizations and deeply interconnected supplier networks|Designed and delivered high-performance APIs enabling customers to programmatically analyze and monitor supply chain risk|Spearheaded the design and deployment of an AI-driven entity resolution system leveraging machine learning and probabilistic matching to unify customer, vendor, and internal datasets at scale"
+        >Interos</a
+      >
       where I built proprietary entity resolution frameworks and supply chain risk
       analysis pipelines. Before that I was a lead backend engineer at
-      <a href="https://agoradata.com/">Agora</a> where I built a unified data layer
+      <a
+        href="https://agoradata.com/"
+        class="preview-link"
+        data-preview-role="Lead Backend Engineer"
+        data-preview-time="Jan 2022 - Jan 2024"
+        data-preview-work="Architected and implemented a core data layer for auto finance systems, unifying fragmented lending and vehicle datasets|Built scalable pipelines to ingest, normalize, and transform data from diverse financial institutions and dealership sources|Designed and developed an AI-driven loan origination pipeline leveraging LLMs to extract, structure, and validate data from unstructured loan documents|Modeled data to support end-to-end loan lifecycle tracking, underwriting workflows, and portfolio analytics while improving data consistency and accessibility|Partnered with stakeholders to translate complex financial and underwriting workflows into scalable, production-grade data infrastructure"
+        >Agora</a
+      >
+      where I built a unified data layer
       and high volume workflows for auto finance data. Before that I was a founding
-      engineer at <a href="https://www.prefect.io/">Prefect</a> where I built open
+      engineer at
+      <a
+        href="https://www.prefect.io/"
+        class="preview-link"
+        data-preview-role="Founding Engineer"
+        data-preview-time="Jan 2018 - Jan 2021"
+        data-preview-work="Served as technical lead for an open-source workflow orchestration framework, scaling the community to thousands of users and contributors|Designed and built a distributed orchestration backend using a hybrid execution model for flexible workflow execution|Developed a highly scalable, multi-tenant GraphQL API on Kubernetes handling millions of requests daily with zero-downtime deployments|Established CI/CD and release infrastructure enabling rapid iteration and reliable delivery|Contributed to ecosystem growth through integrations, developer experience improvements, and community support"
+        >Prefect</a
+      >
+      where I built open
       source data engineering libraries and hybrid cloud platforms. Before that I
       was a software engineer at
-      <a href="https://kensho.com/">Kensho</a> (acq.
-      <a href="https://www.google.com/finance/quote/SPGI:NYSE">$SPGI</a>)
+      <a
+        href="https://kensho.com/"
+        class="preview-link"
+        data-preview-role="Software Engineer"
+        data-preview-time="Jan 2017 - Jan 2018"
+        data-preview-work="Designed and implemented streaming ETL pipelines for large-scale NLP processing of geopolitical and financial data|Partnered with data science teams to productionize machine learning models into robust, scalable systems|Built and maintained a database of unstructured geopolitical events powering downstream analytics and insights"
+        >Kensho</a
+      >
+      (acq.
+      <a
+        href="https://www.google.com/finance/quote/SPGI:NYSE"
+        class="preview-link"
+        data-preview-type="stock"
+        data-stock-symbol="SPGI"
+        data-stock-market="NYSE"
+        data-stock-name="S&amp;P Global Inc"
+        >$SPGI</a
+      >)
       where I built natural language processing pipelines for geopolitical and
       financial data. Before that I was a machine learning researcher in
       partnership with NASA's
-      <a href="https://www.nasa.gov/goddard/">Goddard Space Flight Center</a>
+      <a
+        href="https://www.nasa.gov/goddard/"
+        class="preview-link"
+        data-preview-role="Machine Learning Researcher"
+        data-preview-time="Jan 2015 - Jan 2017"
+        data-preview-work="Built backend infrastructure for a predictive anomaly detection system supporting NASA operations|Developed pipelines to process and model millions of unstructured anomaly reports using topic modeling techniques|Enabled predictive classification workflows for incoming reports, improving analysis and response capabilities"
+        >Goddard Space Flight Center</a
+      >
       and the
-      <a href="https://www.jpl.nasa.gov/">Jet Propulsion Lab</a> where I built
+      <a
+        href="https://www.jpl.nasa.gov/"
+        class="preview-link"
+        data-preview-role="Machine Learning Researcher"
+        data-preview-time="Jan 2015 - Jan 2017"
+        data-preview-work="Built backend infrastructure for a predictive anomaly detection system supporting NASA operations|Developed pipelines to process and model millions of unstructured anomaly reports using topic modeling techniques|Enabled predictive classification workflows for incoming reports, improving analysis and response capabilities"
+        >Jet Propulsion Lab</a
+      >
+      where I built
       models to classify and predict spaceflight anomalies.
     </p>
 
@@ -235,5 +465,268 @@
         </li>
       </ul>
     </div> -->
+    <script>
+      (() => {
+        const links = document.querySelectorAll(".preview-link");
+
+        if (!links.length) {
+          return;
+        }
+
+        const card = document.createElement("div");
+        card.className = "link-preview";
+        card.setAttribute("aria-hidden", "true");
+        card.innerHTML = `
+          <div class="link-preview-window">
+            <div class="experience-preview">
+              <div class="experience-heading">
+                <div class="experience-role"></div>
+                <div class="experience-time"></div>
+              </div>
+              <div class="experience-note"></div>
+              <div class="experience-work"></div>
+            </div>
+            <div class="stock-preview">
+              <div class="stock-head">
+                <div class="stock-symbol"></div>
+                <div class="stock-market"></div>
+              </div>
+              <div class="stock-line">
+                <div class="stock-price"></div>
+                <div class="stock-change"></div>
+              </div>
+              <div class="stock-status"></div>
+              <div class="stock-time"></div>
+            </div>
+          </div>
+        `;
+        document.body.appendChild(card);
+
+        const role = card.querySelector(".experience-role");
+        const time = card.querySelector(".experience-time");
+        const note = card.querySelector(".experience-note");
+        const work = card.querySelector(".experience-work");
+        const stockSymbol = card.querySelector(".stock-symbol");
+        const stockMarket = card.querySelector(".stock-market");
+        const stockPrice = card.querySelector(".stock-price");
+        const stockChange = card.querySelector(".stock-change");
+        const stockStatus = card.querySelector(".stock-status");
+        const stockTime = card.querySelector(".stock-time");
+        const stockQuotes = new Map();
+        const stockQuoteRequests = new Map();
+        let activeLink = null;
+
+        const placeCard = (link) => {
+          const gap = 10;
+          const margin = 12;
+          const linkBox = link.getBoundingClientRect();
+          const cardBox = card.getBoundingClientRect();
+          const maxLeft = window.innerWidth - cardBox.width - margin;
+          let left = linkBox.left + linkBox.width / 2 - cardBox.width / 2;
+          let top = linkBox.bottom + gap;
+
+          left = Math.max(margin, Math.min(left, maxLeft));
+
+          if (top + cardBox.height + margin > window.innerHeight) {
+            top = linkBox.top - cardBox.height - gap;
+          }
+
+          card.style.left = `${left}px`;
+          card.style.top = `${Math.max(margin, top)}px`;
+        };
+
+        const parseStockQuote = (markdown, stockName) => {
+          const lines = markdown
+            .split("\n")
+            .map((line) => line.trim())
+            .filter(Boolean);
+          const start = lines.findIndex((line) => line === stockName);
+          const quoteLines = start === -1 ? lines : lines.slice(start, start + 12);
+          const price = quoteLines.find((line) => /^\$[\d,.]+$/.test(line));
+          const percent = quoteLines.find((line) => /^[+-]\d+(\.\d+)?%$/.test(line));
+          const today = quoteLines.find((line) => /^\([+-]?[\d,.]+\) Today$/.test(line));
+          const timestamp = quoteLines.find((line) => line.includes("UTC") && line.includes("USD"));
+
+          if (!price || !percent) {
+            throw new Error("Quote not found");
+          }
+
+          return {
+            price,
+            percent,
+            absolute: today ? today.replace(/[()]/g, "").replace(" Today", "") : "",
+            timestamp: timestamp ? timestamp.replace(/\s+\u00b7\s+USD$/, "") : "",
+          };
+        };
+
+        const renderStockQuote = (quote) => {
+          const isDown = quote.percent.startsWith("-");
+
+          stockPrice.textContent = quote.price;
+          stockChange.textContent = quote.absolute
+            ? `${quote.percent} ${quote.absolute}`
+            : quote.percent;
+          stockChange.classList.toggle("is-up", !isDown);
+          stockChange.classList.toggle("is-down", isDown);
+          stockStatus.textContent = "Today";
+          stockTime.textContent = quote.timestamp || "";
+          stockTime.hidden = !quote.timestamp;
+        };
+
+        const fetchStockQuote = async (link) => {
+          const symbol = link.dataset.stockSymbol;
+          const market = link.dataset.stockMarket || "NYSE";
+          const stockName = link.dataset.stockName;
+
+          if (stockQuotes.has(symbol)) {
+            return stockQuotes.get(symbol);
+          }
+
+          if (stockQuoteRequests.has(symbol)) {
+            return stockQuoteRequests.get(symbol);
+          }
+
+          const request = fetch(
+            `https://r.jina.ai/http://r.jina.ai/http://https://www.google.com/finance/quote/${symbol}:${market}`
+          )
+            .then((response) => response.text())
+            .then((markdown) => {
+              const quote = parseStockQuote(markdown, stockName);
+              stockQuotes.set(symbol, quote);
+              stockQuoteRequests.delete(symbol);
+              return quote;
+            })
+            .catch((error) => {
+              stockQuoteRequests.delete(symbol);
+              throw error;
+            });
+
+          stockQuoteRequests.set(symbol, request);
+          return request;
+        };
+
+        const loadStockQuote = async (link) => {
+          const symbol = link.dataset.stockSymbol;
+
+          if (stockQuotes.has(symbol)) {
+            renderStockQuote(stockQuotes.get(symbol));
+            placeCard(link);
+            return;
+          }
+
+          stockPrice.textContent = "--";
+          stockChange.textContent = "";
+          stockChange.classList.remove("is-up", "is-down");
+          stockStatus.textContent = "Loading quote";
+          stockTime.textContent = "";
+          stockTime.hidden = true;
+          placeCard(link);
+
+          try {
+            const quote = await fetchStockQuote(link);
+
+            if (activeLink === link) {
+              renderStockQuote(quote);
+              placeCard(link);
+            }
+          } catch {
+            if (activeLink === link) {
+              stockPrice.textContent = "--";
+              stockChange.textContent = "";
+              stockChange.classList.remove("is-up", "is-down");
+              stockStatus.textContent = "Quote unavailable";
+              stockTime.textContent = "";
+              stockTime.hidden = true;
+              placeCard(link);
+            }
+          }
+        };
+
+        const showExperienceCard = (link) => {
+          activeLink = link;
+          const workLines = (link.dataset.previewWork || "")
+            .split("|")
+            .filter(Boolean);
+
+          role.textContent = link.dataset.previewRole || "";
+          time.textContent = link.dataset.previewTime || "";
+          note.textContent = link.dataset.previewNote || "";
+          note.hidden = !note.textContent;
+          work.replaceChildren(
+            ...workLines.map((line) => {
+              const item = document.createElement("div");
+              item.className = "experience-work-line";
+              item.textContent = line;
+              return item;
+            })
+          );
+          work.hidden = !workLines.length;
+          card.classList.remove("is-stock");
+          card.classList.add("is-visible");
+          placeCard(link);
+        };
+
+        const showStockCard = (link) => {
+          activeLink = link;
+          stockSymbol.textContent = link.dataset.stockSymbol || link.textContent.trim();
+          stockMarket.textContent = link.dataset.stockMarket || "";
+          card.classList.add("is-stock");
+          card.classList.add("is-visible");
+          placeCard(link);
+          loadStockQuote(link);
+        };
+
+        const showCard = (link) => {
+          if (link.dataset.previewType === "stock") {
+            showStockCard(link);
+            return;
+          }
+
+          showExperienceCard(link);
+        };
+
+        const hideCard = (link) => {
+          if (activeLink !== link) {
+            return;
+          }
+
+          activeLink = null;
+          card.classList.remove("is-visible");
+        };
+
+        links.forEach((link) => {
+          link.addEventListener("mouseenter", () => showCard(link));
+          link.addEventListener("focus", () => showCard(link));
+          link.addEventListener("mouseleave", () => hideCard(link));
+          link.addEventListener("blur", () => hideCard(link));
+        });
+
+        const preloadStockQuotes = () => {
+          links.forEach((link) => {
+            if (link.dataset.previewType === "stock") {
+              fetchStockQuote(link).catch(() => {});
+            }
+          });
+        };
+
+        if ("requestIdleCallback" in window) {
+          window.requestIdleCallback(preloadStockQuotes, { timeout: 1500 });
+        } else {
+          window.setTimeout(preloadStockQuotes, 0);
+        }
+
+        window.addEventListener("scroll", () => {
+          if (activeLink) {
+            placeCard(activeLink);
+          }
+        });
+
+        window.addEventListener("resize", () => {
+          if (activeLink) {
+            placeCard(activeLink);
+          }
+        });
+      })();
+    </script>
   </body>
 </html>
