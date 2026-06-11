@@ -83,6 +83,10 @@
         transform: translateY(0);
       }
 
+      .link-preview.is-mobile-open {
+        pointer-events: auto;
+      }
+
       .link-preview.is-stock {
         width: min(260px, calc(100vw - 24px));
       }
@@ -101,6 +105,13 @@
         align-items: baseline;
         gap: 12px;
         justify-content: space-between;
+      }
+
+      .preview-title-group {
+        align-items: baseline;
+        display: inline-flex;
+        gap: 6px;
+        min-width: 0;
       }
 
       .experience-role {
@@ -222,6 +233,28 @@
         color: #000;
         font-size: 11px;
         margin-top: 8px;
+      }
+
+      .preview-open-link {
+        align-items: center;
+        border-bottom: 0;
+        color: #000;
+        display: none;
+        flex: 0 0 auto;
+        height: 14px;
+        justify-content: center;
+        line-height: 1;
+        width: 14px;
+      }
+
+      .link-preview.is-mobile-open .preview-open-link {
+        display: inline-flex;
+      }
+
+      .preview-open-link svg {
+        display: block;
+        height: 13px;
+        width: 13px;
       }
 
       .links ul,
@@ -387,6 +420,11 @@
         data-preview-type="stock"
         data-stock-symbol="SPGI"
         data-stock-market="NYSE"
+        data-stock-price="$413.34"
+        data-stock-percent="-3.00%"
+        data-stock-change="-12.79"
+        data-stock-status="Market close"
+        data-stock-time="Jun 11, 2026 4:25 PM ET"
         >$SPGI</a
       >)
       where I built natural language processing pipelines for geopolitical and
@@ -444,7 +482,17 @@
           <div class="link-preview-window">
             <div class="experience-preview">
               <div class="experience-heading">
-                <div class="experience-role"></div>
+                <div class="preview-title-group">
+                  <div class="experience-role"></div>
+                  <a class="preview-open-link" href="" aria-label="Open link">
+                    <svg viewBox="0 0 16 16" aria-hidden="true">
+                      <path
+                        d="M5 3.5H3.5v9h9V11H14v3H2V2h3v1.5Zm2-1.5h7v7h-1.5V4.56L6.53 10.53 5.47 9.47l5.97-5.97H7V2Z"
+                        fill="currentColor"
+                      />
+                    </svg>
+                  </a>
+                </div>
                 <div class="experience-time"></div>
               </div>
               <div class="experience-note"></div>
@@ -452,7 +500,17 @@
             </div>
             <div class="stock-preview">
               <div class="stock-head">
-                <div class="stock-symbol"></div>
+                <div class="preview-title-group">
+                  <div class="stock-symbol"></div>
+                  <a class="preview-open-link" href="" aria-label="Open quote">
+                    <svg viewBox="0 0 16 16" aria-hidden="true">
+                      <path
+                        d="M5 3.5H3.5v9h9V11H14v3H2V2h3v1.5Zm2-1.5h7v7h-1.5V4.56L6.53 10.53 5.47 9.47l5.97-5.97H7V2Z"
+                        fill="currentColor"
+                      />
+                    </svg>
+                  </a>
+                </div>
                 <div class="stock-market"></div>
               </div>
               <div class="stock-line">
@@ -476,9 +534,15 @@
         const stockChange = card.querySelector(".stock-change");
         const stockStatus = card.querySelector(".stock-status");
         const stockTime = card.querySelector(".stock-time");
+        const openLinks = card.querySelectorAll(".preview-open-link");
         const stockQuotes = new Map();
         const stockQuoteRequests = new Map();
+        const mobilePreviewQuery = window.matchMedia(
+          "(max-width: 700px), (hover: none), (pointer: coarse)"
+        );
         let activeLink = null;
+
+        const isMobilePreview = () => mobilePreviewQuery.matches;
 
         const placeCard = (link) => {
           const gap = 10;
@@ -537,6 +601,14 @@
           };
         };
 
+        const readFallbackStockQuote = (link) => ({
+          absolute: link.dataset.stockChange || "",
+          percent: link.dataset.stockPercent || "",
+          price: link.dataset.stockPrice || "--",
+          status: link.dataset.stockStatus || "Snapshot",
+          timestamp: link.dataset.stockTime || "",
+        });
+
         const renderStockQuote = (quote) => {
           const isDown = quote.percent.startsWith("-");
 
@@ -546,16 +618,25 @@
             : quote.percent;
           stockChange.classList.toggle("is-up", !isDown);
           stockChange.classList.toggle("is-down", isDown);
-          stockStatus.textContent = "Today";
+          stockStatus.textContent = quote.status || "Today";
           stockTime.textContent = quote.timestamp || "";
           stockTime.hidden = !quote.timestamp;
         };
 
-        const fetchStockQuote = async (link) => {
+        const setOpenLink = (link) => {
+          const label = link.dataset.previewType === "stock" ? "Open quote" : "Open";
+
+          openLinks.forEach((openLink) => {
+            openLink.href = link.href;
+            openLink.setAttribute("aria-label", `${label} for ${link.textContent.trim()}`);
+          });
+        };
+
+        const fetchStockQuote = async (link, options = {}) => {
           const symbol = link.dataset.stockSymbol;
           const yahooUrl = `https://query1.finance.yahoo.com/v8/finance/chart/${symbol}?range=1d&interval=1m&includePrePost=false`;
 
-          if (stockQuotes.has(symbol)) {
+          if (!options.force && stockQuotes.has(symbol)) {
             return stockQuotes.get(symbol);
           }
 
@@ -563,8 +644,12 @@
             return stockQuoteRequests.get(symbol);
           }
 
+          const controller = new AbortController();
+          const timeout = window.setTimeout(() => controller.abort(), 1800);
+
           const request = fetch(
-            `https://api.allorigins.win/raw?url=${encodeURIComponent(yahooUrl)}`
+            `https://api.allorigins.win/raw?url=${encodeURIComponent(yahooUrl)}`,
+            { signal: controller.signal }
           )
             .then((response) => {
               if (!response.ok) {
@@ -582,6 +667,9 @@
             .catch((error) => {
               stockQuoteRequests.delete(symbol);
               throw error;
+            })
+            .finally(() => {
+              window.clearTimeout(timeout);
             });
 
           stockQuoteRequests.set(symbol, request);
@@ -597,12 +685,7 @@
             return;
           }
 
-          stockPrice.textContent = "--";
-          stockChange.textContent = "";
-          stockChange.classList.remove("is-up", "is-down");
-          stockStatus.textContent = "Loading quote";
-          stockTime.textContent = "";
-          stockTime.hidden = true;
+          renderStockQuote(readFallbackStockQuote(link));
           placeCard(link);
 
           try {
@@ -614,19 +697,14 @@
             }
           } catch {
             if (activeLink === link) {
-              stockPrice.textContent = "--";
-              stockChange.textContent = "";
-              stockChange.classList.remove("is-up", "is-down");
-              stockStatus.textContent = "Quote unavailable";
-              stockTime.textContent = "";
-              stockTime.hidden = true;
-              placeCard(link);
+              renderStockQuote(readFallbackStockQuote(link));
             }
           }
         };
 
         const showExperienceCard = (link) => {
           activeLink = link;
+          setOpenLink(link);
           const workLines = (link.dataset.previewWork || "")
             .split("|")
             .filter(Boolean);
@@ -651,6 +729,7 @@
 
         const showStockCard = (link) => {
           activeLink = link;
+          setOpenLink(link);
           stockSymbol.textContent = link.dataset.stockSymbol || link.textContent.trim();
           stockMarket.textContent = link.dataset.stockMarket || "";
           card.classList.add("is-stock");
@@ -660,6 +739,10 @@
         };
 
         const showCard = (link) => {
+          if (!isMobilePreview()) {
+            card.classList.remove("is-mobile-open");
+          }
+
           if (link.dataset.previewType === "stock") {
             showStockCard(link);
             return;
@@ -669,6 +752,10 @@
         };
 
         const hideCard = (link) => {
+          if (card.classList.contains("is-mobile-open")) {
+            return;
+          }
+
           if (activeLink !== link) {
             return;
           }
@@ -677,17 +764,54 @@
           card.classList.remove("is-visible");
         };
 
+        const closeCard = () => {
+          activeLink = null;
+          card.classList.remove("is-mobile-open", "is-visible");
+        };
+
         links.forEach((link) => {
           link.addEventListener("mouseenter", () => showCard(link));
-          link.addEventListener("focus", () => showCard(link));
+          link.addEventListener("focus", () => {
+            if (!isMobilePreview()) {
+              showCard(link);
+            }
+          });
+          link.addEventListener("click", (event) => {
+            if (!isMobilePreview()) {
+              return;
+            }
+
+            event.preventDefault();
+            event.stopPropagation();
+            showCard(link);
+            card.classList.add("is-mobile-open");
+            placeCard(link);
+          });
           link.addEventListener("mouseleave", () => hideCard(link));
           link.addEventListener("blur", () => hideCard(link));
+        });
+
+        document.addEventListener("click", (event) => {
+          if (!card.classList.contains("is-mobile-open")) {
+            return;
+          }
+
+          if (card.contains(event.target)) {
+            return;
+          }
+
+          if (activeLink && activeLink.contains(event.target)) {
+            return;
+          }
+
+          closeCard();
         });
 
         const preloadStockQuotes = () => {
           links.forEach((link) => {
             if (link.dataset.previewType === "stock") {
-              fetchStockQuote(link).catch(() => {});
+              stockQuotes.set(link.dataset.stockSymbol, readFallbackStockQuote(link));
+              fetchStockQuote(link, { force: true }).catch(() => {});
             }
           });
         };
@@ -706,6 +830,10 @@
 
         window.addEventListener("resize", () => {
           if (activeLink) {
+            if (!isMobilePreview()) {
+              card.classList.remove("is-mobile-open");
+            }
+
             placeCard(activeLink);
           }
         });
